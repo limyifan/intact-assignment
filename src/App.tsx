@@ -1,6 +1,7 @@
 // @ts-ignore
 import React from "react";
-import Form from "./components/Form";
+// @ts-ignore
+import Form from "./components/Form.tsx";
 
 export default function App() {
     return (

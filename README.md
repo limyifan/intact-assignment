@@ -7,9 +7,9 @@ This project contains a React implementation of a dynamic form rendered from JSO
 ## Structure
 
 - `/src`
-    - `App.js` - Main App component
+    - `App.tsx` - Main App component
     - `components/` - Reusable React components
-        - `Form.js` - Wrapper component
+        - `Form.tsx` - Wrapper component
     - `data/`
         - `mockData.json` - Sample JSON form configuration
     - `/interfaces`

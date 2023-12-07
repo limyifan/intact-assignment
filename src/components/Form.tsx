@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 // @ts-ignore
 import moment from "moment";
 // @ts-ignore
-import mockData from "./mockData.json";
+import mockData from "../data/mockData.json";
 import {FormData, FormView, IData, IForm} from "../interfaces/types";
 
 export default function Form() {
@@ -11,16 +11,14 @@ export default function Form() {
     const [formData, setFormData] = useState<FormData>();
     const [loading, setLoading] = useState(true);
 
-    useEffect( () => {
+    useEffect(() => {
         // Simulate an API call
         setTimeout(() => {
             setFormConfig(mockData);
             setFormData(mockData.data);
             setLoading(false)
-        }, 2000);
+        }, 1500);
     }, []);
-
-
 
     /**
      * Handles change in form input value and updates the form data state.
@@ -28,24 +26,27 @@ export default function Form() {
      * @param {string} path - The path to the specific form field.
      * @param {React.ChangeEvent<HTMLInputElement>} e - The event object representing the change in input value.
      */
-    const handleChange = (formId:string, path:string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (formId: string, path: string, e: React.ChangeEvent<HTMLInputElement>) => {
         const data = {...formData};
-        let newValue = e.target.value;
-        data[formId][path] = newValue;
+        data[formId][path] = e.target.value;
         setFormData(data);
     };
+
     const renderFormElements = (formId: string, form: FormView) => {
         const currentData: IData = formData[formId];
-        return Object.entries(form.children).map(([elementId, comp]) => {
-            switch (comp.component) {
+        //loop through the children field to render form elements based on the provided form configuration.
+        return Object.entries(form.children).map(([elementId, childComponent]) => {
+            switch (childComponent.component) {
                 case 'Text':
                     return (
                         <div key={elementId}>
-                            <label>{comp.label}</label>
+                            <label>{childComponent.label}</label>
                             <input
-                                name={comp.name}
+                                name={childComponent.name}
                                 value={currentData.employee__name}
-                                onChange={(e) => { handleChange(formId, comp.path, e) }}
+                                onChange={(e) => {
+                                    handleChange(formId, childComponent.path, e)
+                                }}
                             />
                         </div>
                     );
@@ -53,18 +54,20 @@ export default function Form() {
                     const date = moment(currentData.date).format('YYYY-MM-DD');
                     return (
                         <div key={elementId}>
-                            <label>{comp.label}</label>
+                            <label>{childComponent.label}</label>
                             <input
                                 type="date"
-                                name={comp.name}
+                                name={childComponent.name}
                                 value={date}
-                                onChange={(e) => { handleChange(formId, comp.path, e) }}
+                                onChange={(e) => {
+                                    handleChange(formId, childComponent.path, e)
+                                }}
                             />
                         </div>
                     );
                 case 'Command':
                     return (
-                        <button key={elementId}>{comp.text}</button>
+                        <button key={elementId}>{childComponent.text}</button>
                     );
                 default:
                     return null;
@@ -72,16 +75,16 @@ export default function Form() {
         });
     };
 
-    if(loading) return <p>Loading...</p>
+    if (loading) return <p>Loading...</p>
 
     return (
-        //loop through the form view to generate different employee forms
-        Object.entries(formConfig.view).map(([formId, form]) => (
-            <form key={formId}>
-                <h1>{form.title}</h1>
-                {renderFormElements(formId, form)}
-            </form>
-        )
+        //loop through the form view to render different employee forms dynamically
+        Object.entries(formConfig.view).map(([formId, formView]) => (
+                <form key={formId}>
+                    <h1>{formView.title}</h1>
+                    {renderFormElements(formId, formView)}
+                </form>
+            )
         )
     );
 }
